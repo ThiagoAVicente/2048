@@ -10,27 +10,22 @@ logger = logging.getLogger("GAME")
 class g2048:
     def __init__(self, size = 4):
         self.size = 4
-        self.points = 0
         self.reset()
-
+    def getPoints(self):
+        return np.max(self.board)
     def getBoard(self) -> np.ndarray:
         """Get the current game board"""
         return self.board.copy()
 
-    def reset(self) -> int:
+    def reset(self):
         """
         resets game
         :returns points on previous game
         """
-        points = self.points
-
         #reset game status
         self.board  = np.zeros((self.size,self.size))
         self.__spawn()
-        self.points = 0
         self.done = False
-        logger.info(f"Game with {points} reseted")
-        return points
 
     def play(self, direction) -> int:
         """
@@ -47,11 +42,9 @@ class g2048:
         if points < 0:
             # Cannot move pieces in that direction
             return -1
-
         self.__spawn()
         go = abs(self.__is_game_over())
-        print(go)
-        return -go if go < 4 and go > 1 else points
+        return -go if go > 1 else points
 
     def __exec(self,direction) -> int:
 
@@ -76,31 +69,31 @@ class g2048:
 
         for index, value in np.ndenumerate(self.board):
             visited[index] = True # mark path
-            
+
             # case 1: empty tile
             if np.isclose(value,0):
                 return 1
-            
+
             for direction in dirs:
                 nx, ny = index[0] + direction[0], index[1] + direction[1]
-                
+
                 # check limits
                 if nx < 0 or nx >= self.size or ny < 0 or ny >= self.size:
                     continue
-                
+
                 # no need to check again
                 if visited[nx,ny]:
-                    continue 
-                
+                    continue
+
                 tvalue = self.board[nx,ny]
-                
+
                 # case 1: possible merge
-                if np.isclose(tvalue,value): 
+                if np.isclose(tvalue,value):
                     return 1
-                
+
                 if np.isclose(tvalue,TARGETVALUE) or np.isclose(value,TARGETVALUE):
                     return 3
-                
+
         return 2
 
     def __spawn(self) -> bool:

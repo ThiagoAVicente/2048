@@ -11,27 +11,28 @@ import logging
 from utils.rules import TILE_PROBABILITY
 from utils.boardmoves import horizontal_move, vertical_move, is_full, get_empty, get_legal_moves
 import numpy as np
+from utils.directions import UP
 
 logger = logging.getLogger("Emm")
 
 class agent:
-    def __init__(self,maxdepth:int = 10,size = 4, w_empty = 0.5, w_max = 0.5):
+    def __init__(self,maxdepth:int = 3,size = 4, w_empty = 0.5, w_max = 0.5):
         self.maxdepth = maxdepth
         self.size = size
-        self.w_empty = 0.5
-        self.w_max = 0.5
+        self.w_empty = w_empty
+        self.w_max = w_max
         logger.info(f"Emm agent with {maxdepth} maxdepth")
 
     def act(self, board:np.ndarray, *args ):
         score = -inf
-        best_move = None
+        best_move = UP
         for move in get_legal_moves(board,self.size):
             new_board = self.__move(board,move,self.size)
             new_score = self.__expectiminimax(new_board,self.size,self.maxdepth)
             if  new_score > score:
                 best_move = move
                 score = new_score
-
+            
         return best_move
 
     def __expectiminimax(self,board,size, depth, isMaxNode=True) -> float:
