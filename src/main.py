@@ -1,12 +1,13 @@
 import logging
 from game import g2048
 from utils.directions import RIGHT, LEFT, UP, DOWN
+import agents.expectiminimax as emm
 import os
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(name)s: %(message)s', force=True)
-
-
+logger = logging.getLogger("Main")
 game = g2048()
+agent = emm.agent(1)
 
 dictdir ={
     "w":UP,
@@ -16,11 +17,13 @@ dictdir ={
 }
 
 while True:
-    #os.system("clear")
+    os.system("clear")
     print(game)
-    print("w,a,s,d")
-    dir = input(">> ")
-    op = dictdir[dir]
 
-    if game.play(op) == -2:
+    op = agent.act(game.getBoard())
+    res = game.play(op)
+    if  res <= -2:
         break
+
+os.system("clear")
+print(game)
